@@ -1,45 +1,46 @@
-# Implementation Plan - Configure Hilt Dependency Injection
+# Implementation Plan - English and Persian Localization
 
-This plan outlines the steps to integrate Hilt DI into the `melody` project using KSP.
+Implement the localization foundation for English and Persian, ensuring automatic RTL/LTR support and removal of hardcoded strings.
+
+## User Review Required
+
+> [!IMPORTANT]
+> The application will use English as the default language (`res/values/strings.xml`) and Persian as the localized language (`res/values-fa/strings.xml`).
+> Android 13+ per-app language settings will be enabled via `locales_config.xml`.
 
 ## Proposed Changes
 
-### Build Configuration
+### Resources Configuration
 
-#### [MODIFY] [libs.versions.toml](file:///D:/Projects/melody/gradle/libs.versions.toml)
-- Ensure Hilt and KSP versions are compatible with Kotlin `2.2.10`.
-- I will use:
-    - `hilt = "2.55"` (or keep `2.57.1` if it exists, will verify during sync)
-    - `ksp = "2.2.10-1.0.28"` (Matching Kotlin version)
-- Add/Verify library and plugin aliases.
+#### [MODIFY] [strings.xml](file:///D:/projects/melody/app/src/main/res/values/strings.xml)
+- Add baseline English string resources (Home, Search, Settings, etc.).
+- Update `app_name` to "Melody".
 
-#### [MODIFY] [build.gradle.kts](file:///D:/Projects/melody/build.gradle.kts) (Root)
-- Add Hilt and KSP plugin aliases with `apply false`.
+#### [NEW] [strings.xml](file:///D:/projects/melody/app/src/main/res/values-fa/strings.xml)
+- Create Persian translations for all keys in the default `strings.xml`.
 
-#### [MODIFY] [build.gradle.kts](file:///D:/Projects/melody/app/build.gradle.kts) (App)
-- Apply Hilt and KSP plugins.
-- Add Hilt dependencies (`hilt-android` and `hilt-compiler` via KSP).
-- Set Java and Kotlin JVM target to 17.
+#### [NEW] [locales_config.xml](file:///D:/projects/melody/app/src/main/res/xml/locales_config.xml)
+- Define supported locales: `en` and `fa`.
 
-### Application and Android Components
+### Manifest and App Configuration
 
-#### [NEW] [MelodyApplication.kt](file:///D:/Projects/melody/app/src/main/java/com/mustafa/melody/MelodyApplication.kt)
-- Create the Hilt-annotated Application class.
+#### [MODIFY] [AndroidManifest.xml](file:///D:/projects/melody/app/src/main/AndroidManifest.xml)
+- Add `android:localeConfig="@xml/locales_config"` to the `<application>` tag.
+- Ensure `android:supportsRtl="true"` is present.
 
-#### [MODIFY] [AndroidManifest.xml](file:///D:/Projects/melody/app/src/main/AndroidManifest.xml)
-- Set `android:name=".MelodyApplication"` in the `<application>` tag.
+### UI and Source Code
 
-#### [MODIFY] [MainActivity.kt](file:///D:/Projects/melody/app/src/main/java/com/mustafa/melody/MainActivity.kt)
-- Annotate `MainActivity` with `@AndroidEntryPoint`.
+#### [MODIFY] [MainActivity.kt](file:///D:/projects/melody/app/src/main/java/com/mustafa/melody/MainActivity.kt)
+- Replace hardcoded "Hello $name!" with a string resource.
+- Update `Greeting` preview to use resources if applicable, or keep technical strings like "Android" if appropriate (though user-facing greetings should be localized).
 
 ## Verification Plan
 
 ### Automated Tests
-- Run Gradle sync.
-- Execute `.\gradlew.bat :app:assembleDebug` to ensure the project builds correctly with Hilt.
+- `.\gradlew.bat :app:assembleDebug`: Verify compilation.
+- `.\gradlew.bat :app:testDebugUnitTest`: Verify unit tests.
+- `.\gradlew.bat :app:lintDebug`: Check for missing translations or lint issues.
 
 ### Manual Verification
-- None required for DI setup beyond a successful build.
-
-## Post-Execution
-- Git status, add, commit with message "chore: configure Hilt dependency injection", and push to `main`.
+- Verify layout direction switches between LTR (English) and RTL (Persian) based on system/app locale.
+- Confirm string resources are correctly loaded in both languages.

@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">ملودی</string>
+    <string name="welcome_message">به ملودی خوش آمدید</string>
+    <string name="greeting">سلام %1$s!</string>
+
+    <string name="home">خانه</string>
+    <string name="search">جستجو</string>
+    <string name="downloads">دانلودها</string>
+    <string name="playlists">پلی لیست ها</string>
+    <string name="profile">پروفایل</string>
+
+    <string name="settings">تنظیمات</string>
+    <string name="notifications">اعلان ها</string>
+    <string name="language">زبان</string>
+    <string name="theme">تم</string>
+
+    <string name="english">انگلیسی</string>
+    <string name="persian">فارسی</string>
+
+    <string name="light_theme">روشن</string>
+    <string name="dark_theme">تاریک</string>
+    <string name="system_theme">پیش فرض سیستم</string>
+
+    <string name="loading">در حال بارگذاری</string>
+    <string name="retry">تلاش دوباره</string>
+    <string name="no_results">نتیجه ای پیدا نشد</string>
+    <string name="network_error">اتصال به شبکه امکان پذیر نیست</string>
+</resources>
