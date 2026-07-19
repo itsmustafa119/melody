@@ -25,4 +25,5 @@
     <string name="retry">Retry</string>
     <string name="no_results">No results found</string>
     <string name="network_error">Unable to connect to the network</string>
+    <string name="preference_update_failed">Unable to update application settings</string>
 </resources>
