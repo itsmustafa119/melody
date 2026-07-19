@@ -18,7 +18,9 @@ import com.mustafa.melody.core.navigation.navigateToTopLevelDestination
 import com.mustafa.melody.core.navigation.topLevelDestinations
 
 @Composable
-fun MelodyApp() {
+fun MelodyApp(
+    isPremium: Boolean
+) {
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination
@@ -54,6 +56,7 @@ fun MelodyApp() {
     ) { innerPadding ->
         AppNavHost(
             navController = navController,
+            isPremium = isPremium,
             modifier = Modifier.padding(innerPadding)
         )
     }

@@ -63,3 +63,8 @@ val ErrorContainerDark = Color(0xFF8C1D18)
 val OnErrorContainerDark = Color(0xFFF9DEDC)
 
 val OutlineDark = Color(0xFF938F99)
+
+// Premium Tokens
+val PremiumGoldLight = Color(0xFFFFB900)
+val PremiumGoldDark = Color(0xFFFFD700)
+

@@ -26,4 +26,49 @@
     <string name="no_results">No results found</string>
     <string name="network_error">Unable to connect to the network</string>
     <string name="preference_update_failed">Unable to update application settings</string>
+
+    <string name="profile_picture">Profile picture</string>
+    <string name="see_all">See all</string>
+    <string name="something_went_wrong">Something went wrong</string>
+
+    <string name="recommendations_for_you">Recommendations for you</string>
+    <string name="popular_songs">Popular songs</string>
+    <string name="newest_songs">Newest songs</string>
+    <string name="global_playlists">Global playlists</string>
+    <string name="local_playlists">Local playlists</string>
+
+    <string name="liked_songs">Liked songs</string>
+    <string name="recently_played">Recently played</string>
+    <string name="my_playlists">My playlists</string>
+    <string name="top_artists">Top artists</string>
+
+    <string name="search_music">Search music</string>
+    <string name="songs">Songs</string>
+    <string name="artists">Artists</string>
+    <string name="albums">Albums</string>
+    <string name="search_history">Search history</string>
+    <string name="clear_history">Clear history</string>
+    <string name="start_searching">Start searching for music</string>
+
+    <string name="downloaded_songs">Downloaded songs</string>
+    <string name="sort">Sort</string>
+    <string name="no_downloads">No downloaded songs</string>
+    <string name="no_downloads_description">Your offline songs will appear here</string>
+
+    <string name="world_music">World music</string>
+    <string name="local_music">Local music</string>
+    <string name="user_playlists">Your playlists</string>
+    <string name="no_playlists">No playlists yet</string>
+
+    <string name="guest_user">Guest user</string>
+    <string name="premium">Premium</string>
+    <string name="normal_account">Normal account</string>
+    <string name="upgrade_to_premium">Upgrade to Premium</string>
+    <string name="renew_subscription">Renew subscription</string>
+    <string name="account_settings">Account settings</string>
+
+    <string name="play_song">Play song</string>
+    <string name="like_song">Like song</string>
+    <string name="unlike_song">Unlike song</string>
+    <string name="open_playlist">Open playlist</string>
 </resources>

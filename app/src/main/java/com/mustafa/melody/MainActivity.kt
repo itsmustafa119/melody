@@ -83,7 +83,7 @@ class MainActivity : ComponentActivity() {
 
                 CompositionLocalProvider(LocalDensity provides appDensity) {
                     MelodyTheme(darkTheme = useDarkTheme) {
-                        MelodyApp()
+                        MelodyApp(isPremium = uiState.isPremium)
                     }
                 }
             }

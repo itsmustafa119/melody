@@ -26,4 +26,49 @@
     <string name="no_results">نتیجه ای پیدا نشد</string>
     <string name="network_error">اتصال به شبکه امکان پذیر نیست</string>
     <string name="preference_update_failed">به روزرسانی تنظیمات برنامه انجام نشد</string>
+
+    <string name="profile_picture">تصویر پروفایل</string>
+    <string name="see_all">مشاهده همه</string>
+    <string name="something_went_wrong">مشکلی پیش آمد</string>
+
+    <string name="recommendations_for_you">پیشنهادها برای شما</string>
+    <string name="popular_songs">محبوب ترین آهنگ ها</string>
+    <string name="newest_songs">جدیدترین آهنگ ها</string>
+    <string name="global_playlists">پلی لیست های جهانی</string>
+    <string name="local_playlists">پلی لیست های محلی</string>
+
+    <string name="liked_songs">آهنگ های پسندیده</string>
+    <string name="recently_played">اخیرا پخش شده</string>
+    <string name="my_playlists">پلی لیست های من</string>
+    <string name="top_artists">هنرمندان برتر</string>
+
+    <string name="search_music">جستجوی موسیقی</string>
+    <string name="songs">آهنگ ها</string>
+    <string name="artists">هنرمندان</string>
+    <string name="albums">آلبوم ها</string>
+    <string name="search_history">تاریخچه جستجو</string>
+    <string name="clear_history">پاک کردن تاریخچه</string>
+    <string name="start_searching">جستجوی موسیقی را شروع کنید</string>
+
+    <string name="downloaded_songs">آهنگ های دانلود شده</string>
+    <string name="sort">مرتب سازی</string>
+    <string name="no_downloads">آهنگ دانلود شده ای وجود ندارد</string>
+    <string name="no_downloads_description">آهنگ های آفلاین شما در اینجا نمایش داده میشوند</string>
+
+    <string name="world_music">موسیقی جهان</string>
+    <string name="local_music">موسیقی داخلی</string>
+    <string name="user_playlists">پلی لیست های شما</string>
+    <string name="no_playlists">هنوز پلی لیستی وجود ندارد</string>
+
+    <string name="guest_user">کاربر مهمان</string>
+    <string name="premium">ویژه</string>
+    <string name="normal_account">حساب عادی</string>
+    <string name="upgrade_to_premium">ارتقا به حساب ویژه</string>
+    <string name="renew_subscription">تمدید اشتراک</string>
+    <string name="account_settings">تنظیمات حساب</string>
+
+    <string name="play_song">پخش آهنگ</string>
+    <string name="like_song">پسندیدن آهنگ</string>
+    <string name="unlike_song">حذف پسند آهنگ</string>
+    <string name="open_playlist">باز کردن پلی لیست</string>
 </resources>

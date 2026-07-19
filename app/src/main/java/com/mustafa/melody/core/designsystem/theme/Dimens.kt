@@ -36,4 +36,19 @@ object AppDimens {
     val profileImageSize = 40.dp
     val dividerThickness = 1.dp
     val cardElevation = 2.dp
+
+    // Additional Components
+    val topAppBarHeight = 64.dp
+    val searchFieldHeight = 56.dp
+    val avatarBorderWidth = 2.dp
+    val badgeHorizontalPadding = 8.dp
+    val badgeVerticalPadding = 4.dp
+    val quickActionSize = 56.dp
+    val sectionSpacing = 24.dp
+    val gridSpacing = 16.dp
+    val shimmerCornerRadius = 8.dp
+    val cardWidthSmall = 120.dp
+    val cardWidthMedium = 160.dp
+    val cardWidthLarge = 200.dp
+    val carouselCardHeight = 220.dp
 }
