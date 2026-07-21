@@ -10,15 +10,20 @@ import com.mustafa.melody.data.local.entity.ChatMessageEntity
 import com.mustafa.melody.data.local.entity.DownloadedSongEntity
 import com.mustafa.melody.data.local.entity.LikedSongEntity
 import com.mustafa.melody.data.local.entity.SearchHistoryEntity
+import com.mustafa.melody.data.local.dao.RecentlyPlayedDao
+import com.mustafa.melody.data.local.entity.RecentlyPlayedEntity
+import androidx.room.AutoMigration
 
 @Database(
     entities = [
         SearchHistoryEntity::class,
         LikedSongEntity::class,
         DownloadedSongEntity::class,
-        ChatMessageEntity::class
+        ChatMessageEntity::class,
+        RecentlyPlayedEntity::class,
     ],
-    version = DatabaseConstants.DATABASE_VERSION,
+    version = 2,
+    autoMigrations = [AutoMigration(from = 1, to = 2)],
     exportSchema = true
 )
 abstract class MelodyDatabase : RoomDatabase() {
@@ -30,4 +35,6 @@ abstract class MelodyDatabase : RoomDatabase() {
     abstract fun downloadedSongDao(): DownloadedSongDao
 
     abstract fun chatMessageDao(): ChatMessageDao
+
+    abstract fun recentlyPlayedDao(): RecentlyPlayedDao
 }

@@ -7,4 +7,6 @@ sealed interface ProfileIntent {
     data object SettingsClicked : ProfileIntent
     data object NotificationsClicked : ProfileIntent
     data object Retry : ProfileIntent
+    data object AccountClicked : ProfileIntent
+    data object SocialClicked : ProfileIntent
 }

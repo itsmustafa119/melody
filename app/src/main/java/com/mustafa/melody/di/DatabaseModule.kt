@@ -6,6 +6,7 @@ import com.mustafa.melody.data.local.dao.ChatMessageDao
 import com.mustafa.melody.data.local.dao.DownloadedSongDao
 import com.mustafa.melody.data.local.dao.LikedSongDao
 import com.mustafa.melody.data.local.dao.SearchHistoryDao
+import com.mustafa.melody.data.local.dao.RecentlyPlayedDao
 import com.mustafa.melody.data.local.database.DatabaseConstants
 import com.mustafa.melody.data.local.database.MelodyDatabase
 import dagger.Module
@@ -50,4 +51,7 @@ object DatabaseModule {
     fun provideChatMessageDao(
         database: MelodyDatabase
     ): ChatMessageDao = database.chatMessageDao()
+
+    @Provides
+    fun provideRecentlyPlayedDao(database: MelodyDatabase): RecentlyPlayedDao = database.recentlyPlayedDao()
 }

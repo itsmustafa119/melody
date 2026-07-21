@@ -17,7 +17,7 @@ import com.mustafa.melody.R
 
 enum class AppDestination(
     val route: String,
-    @StringRes val labelResId: Int,
+    @param:StringRes val labelResId: Int,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector
 ) {
@@ -54,3 +54,16 @@ enum class AppDestination(
 }
 
 val topLevelDestinations = AppDestination.entries
+
+object AppRoute {
+    const val SETTINGS = "settings"
+    const val NOTIFICATIONS = "notifications"
+    const val NOW_PLAYING = "now_playing"
+    const val AUTH = "auth"
+    const val SOCIAL = "social"
+    const val CHAT = "chat"
+    const val LIKED = "liked"
+    const val RECENT = "recent"
+    const val PLAYLIST_DETAIL = "playlist/{playlistId}"
+    fun playlistDetail(playlistId: String) = "playlist/$playlistId"
+}

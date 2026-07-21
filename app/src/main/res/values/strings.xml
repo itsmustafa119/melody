@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">Melody</string>
-    <string name="welcome_message">Welcome to Melody</string>
-    <string name="greeting">Hello %1$s!</string>
 
     <string name="home">Home</string>
     <string name="search">Search</string>
@@ -10,9 +8,14 @@
     <string name="profile">Profile</string>
 
     <string name="settings">Settings</string>
+    <string name="back">Back</string>
     <string name="notifications">Notifications</string>
+    <string name="no_notifications">No notifications</string>
+    <string name="no_notifications_description">New activity will appear here</string>
     <string name="language">Language</string>
+    <string name="system_language">System language</string>
     <string name="theme">Theme</string>
+    <string name="font_size">Font size</string>
 
     <string name="english">English</string>
     <string name="persian">Persian</string>
@@ -20,12 +23,16 @@
     <string name="light_theme">Light</string>
     <string name="dark_theme">Dark</string>
     <string name="system_theme">System default</string>
+    <string name="font_small">Small</string>
+    <string name="font_default">Default</string>
+    <string name="font_large">Large</string>
+    <string name="font_extra_large">Extra large</string>
 
     <string name="loading">Loading</string>
     <string name="retry">Retry</string>
     <string name="no_results">No results found</string>
-    <string name="network_error">Unable to connect to the network</string>
-    <string name="preference_update_failed">Unable to update application settings</string>
+    <string name="feature_requires_music_data">This feature will be available after music data is connected</string>
+    <string name="try_again_later">Please try again later</string>
 
     <string name="profile_picture">Profile picture</string>
     <string name="see_all">See all</string>
@@ -51,7 +58,10 @@
     <string name="start_searching">Start searching for music</string>
 
     <string name="downloaded_songs">Downloaded songs</string>
-    <string name="sort">Sort</string>
+    <string name="sort_by">Sort: %1$s</string>
+    <string name="sort_recent">Recent</string>
+    <string name="sort_title">Title</string>
+    <string name="sort_artist">Artist</string>
     <string name="no_downloads">No downloaded songs</string>
     <string name="no_downloads_description">Your offline songs will appear here</string>
 
@@ -59,6 +69,7 @@
     <string name="local_music">Local music</string>
     <string name="user_playlists">Your playlists</string>
     <string name="no_playlists">No playlists yet</string>
+    <string name="create_playlist">Create playlist</string>
 
     <string name="guest_user">Guest user</string>
     <string name="premium">Premium</string>
@@ -66,9 +77,74 @@
     <string name="upgrade_to_premium">Upgrade to Premium</string>
     <string name="renew_subscription">Renew subscription</string>
     <string name="account_settings">Account settings</string>
+    <string name="premium_status">Premium status</string>
+    <string name="premium_demo_description">Enable the demonstration Premium account</string>
+    <string name="premium_enabled">Premium features are now enabled</string>
+    <string name="premium_already_active">Your Premium demonstration is already active</string>
+    <string name="avatar_requires_account">Sign in to change your profile picture</string>
 
     <string name="play_song">Play song</string>
     <string name="like_song">Like song</string>
     <string name="unlike_song">Unlike song</string>
-    <string name="open_playlist">Open playlist</string>
+    <string name="now_playing">Now playing</string>
+    <string name="sleep_timer">Sleep timer</string>
+    <string name="sleep_timer_started">Sleep timer set for 30 minutes</string>
+    <string name="pause">Pause</string>
+    <string name="download_song">Download song</string>
+    <string name="download_started">Download started</string>
+    <string name="remove_download">Remove download</string>
+    <string name="premium_required_download">Premium is required for downloads</string>
+    <string name="account">Account</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_out">Sign out</string>
+    <string name="create_account">Create account</string>
+    <string name="signed_in_as">Signed in as %1$s</string>
+    <string name="demo_account_hint">Cloud credentials are not configured; sign-in uses local demo mode.</string>
+    <string name="confirmation_sent">Check your email to confirm the new account.</string>
+    <string name="friends_and_messages">Friends and messages</string>
+    <string name="people">People</string>
+    <string name="search_users">Search users</string>
+    <string name="follow">Follow</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="online">Online</string>
+    <string name="type_message">Type a message</string>
+    <string name="send">Send</string>
+    <string name="sent">Sent</string>
+    <string name="read">Read</string>
+    <string name="share_current_song">Share current song</string>
+    <string name="play_all">Play all</string>
+    <string name="shuffle">Shuffle</string>
+    <string name="previous_song">Previous song</string>
+    <string name="next_song">Next song</string>
+    <string name="queue_position">Track %1$d of %2$d</string>
+    <string name="display_name">Display name</string>
+    <string name="save_profile">Save profile</string>
+    <string name="profile_saved">Profile saved</string>
+    <string name="invalid_account_fields">Enter a valid email and a password of at least 6 characters.</string>
+    <string name="authentication_failed">Authentication failed. Please try again.</string>
+    <string name="avatar_upload_failed">Avatar upload failed. Please try again.</string>
+    <string name="recent_conversations">Recent conversations</string>
+    <string name="shared_song">Shared a song</string>
+    <string name="no_conversations">No conversations yet</string>
+    <string name="public_playlists">Public playlists</string>
+    <string name="no_public_playlists">No public playlists</string>
+    <string name="remove_search_history_item">Remove from search history</string>
+    <string name="nothing_here_yet">Nothing here yet</string>
+    <string name="playlist_name">Playlist name</string>
+    <string name="create">Create</string>
+    <string name="cancel">Cancel</string>
+    <string name="catalog_load_failed">Could not load the music catalog. Check your connection and try again.</string>
+    <string name="playlist">Playlist</string>
+    <string name="playlist_created">Playlist created</string>
+    <string name="sign_in_to_create_playlist">Sign in before creating a cloud playlist.</string>
+    <string name="no_songs_in_playlist">This playlist does not contain any songs yet.</string>
+    <string name="social_load_failed">Could not load people. Check your connection and account.</string>
+    <string name="social_action_failed">The follow action could not be completed.</string>
+    <string name="sending">Sending…</string>
+    <string name="delivered">Delivered</string>
+    <string name="failed">Failed</string>
+    <string name="user_is_typing">%1$s is typing…</string>
+    <string name="shared_song_card">Shared song — tap to play</string>
 </resources>

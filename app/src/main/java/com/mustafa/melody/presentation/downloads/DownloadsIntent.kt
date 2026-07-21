@@ -6,4 +6,6 @@ sealed interface DownloadsIntent {
     data object SettingsClicked : DownloadsIntent
     data object ProfileClicked : DownloadsIntent
     data object Retry : DownloadsIntent
+    data class SongClicked(val songId: String) : DownloadsIntent
+    data class RemoveSong(val songId: String, val localPath: String?) : DownloadsIntent
 }

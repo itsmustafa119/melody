@@ -25,6 +25,9 @@ interface ChatMessageDao {
     )
     fun observeConversation(conversationId: String): Flow<List<ChatMessageEntity>>
 
+    @Query("SELECT * FROM chat_messages ORDER BY sent_at DESC")
+    fun observeAllMessages(): Flow<List<ChatMessageEntity>>
+
     @Query(
         """
         SELECT * FROM chat_messages

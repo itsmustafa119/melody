@@ -8,6 +8,12 @@ import com.mustafa.melody.domain.repository.ChatRepository
 import com.mustafa.melody.domain.repository.DownloadsRepository
 import com.mustafa.melody.domain.repository.LikedSongsRepository
 import com.mustafa.melody.domain.repository.SearchHistoryRepository
+import com.mustafa.melody.data.repository.MusicCatalogRepositoryImpl
+import com.mustafa.melody.domain.repository.MusicCatalogRepository
+import com.mustafa.melody.data.repository.SocialRepositoryImpl
+import com.mustafa.melody.domain.repository.SocialRepository
+import com.mustafa.melody.data.repository.RealtimeChatRepositoryImpl
+import com.mustafa.melody.domain.repository.RealtimeChatRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -41,4 +47,22 @@ abstract class LocalRepositoryModule {
     abstract fun bindChatRepository(
         implementation: ChatRepositoryImpl
     ): ChatRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindMusicCatalogRepository(
+        implementation: MusicCatalogRepositoryImpl
+    ): MusicCatalogRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSocialRepository(
+        implementation: SocialRepositoryImpl
+    ): SocialRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindRealtimeChatRepository(
+        implementation: RealtimeChatRepositoryImpl
+    ): RealtimeChatRepository
 }

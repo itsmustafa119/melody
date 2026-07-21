@@ -14,10 +14,10 @@ import androidx.room.PrimaryKey
 data class SearchHistoryEntity(
     @PrimaryKey
     @ColumnInfo(
-        name = "query",
+        name = "search_query",
         collate = ColumnInfo.NOCASE
     )
-    val query: String,
+    val searchQuery: String,
 
     @ColumnInfo(name = "searched_at")
     val searchedAt: Long

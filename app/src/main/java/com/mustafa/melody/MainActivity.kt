@@ -1,11 +1,17 @@
 package com.mustafa.melody
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import android.Manifest
+import android.os.Build
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,7 +39,7 @@ import com.mustafa.melody.presentation.app.MelodyApp
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private val appViewModel: AppViewModel by viewModels()
 
@@ -42,6 +48,18 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val uiState by appViewModel.uiState.collectAsStateWithLifecycle()
+            val notificationPermission = rememberLauncherForActivityResult(
+                ActivityResultContracts.RequestPermission(),
+            ) { }
+            LaunchedEffect(Unit) {
+                if (
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                    ContextCompat.checkSelfPermission(
+                        this@MainActivity,
+                        Manifest.permission.POST_NOTIFICATIONS,
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
 
             if (uiState.isLoading) {
                 MelodyTheme {
@@ -83,7 +101,10 @@ class MainActivity : ComponentActivity() {
 
                 CompositionLocalProvider(LocalDensity provides appDensity) {
                     MelodyTheme(darkTheme = useDarkTheme) {
-                        MelodyApp(isPremium = uiState.isPremium)
+                        MelodyApp(
+                            appUiState = uiState,
+                            onAppIntent = appViewModel::onIntent,
+                        )
                     }
                 }
             }

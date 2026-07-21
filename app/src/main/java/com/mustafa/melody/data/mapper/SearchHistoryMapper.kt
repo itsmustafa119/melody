@@ -4,11 +4,11 @@ import com.mustafa.melody.data.local.entity.SearchHistoryEntity
 import com.mustafa.melody.domain.model.SearchHistoryItem
 
 fun SearchHistoryEntity.toDomain() = SearchHistoryItem(
-    query = query,
+    query = searchQuery,
     searchedAt = searchedAt
 )
 
 fun SearchHistoryItem.toEntity() = SearchHistoryEntity(
-    query = query,
+    searchQuery = query,
     searchedAt = searchedAt
 )

@@ -1,7 +1,7 @@
 package com.mustafa.melody.domain.model
 
 enum class MessageStatus {
-    PENDING,
+    SENDING,
     SENT,
     DELIVERED,
     READ,

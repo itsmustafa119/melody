@@ -7,7 +7,7 @@ import com.mustafa.melody.data.local.dao.SearchHistoryDao
 import com.mustafa.melody.data.local.database.MelodyDatabase
 import com.mustafa.melody.data.local.entity.SearchHistoryEntity
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runTest
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -48,8 +48,8 @@ class SearchHistoryDaoTest {
         dao.upsert(SearchHistoryEntity("old", 100L))
         dao.upsert(SearchHistoryEntity("new", 200L))
         val recent = dao.observeRecent(2).first()
-        assertEquals("new", recent[0].query)
-        assertEquals("old", recent[1].query)
+        assertEquals("new", recent[0].searchQuery)
+        assertEquals("old", recent[1].searchQuery)
     }
 
     @Test

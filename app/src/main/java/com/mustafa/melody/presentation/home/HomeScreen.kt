@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.LibraryMusic
@@ -33,6 +34,8 @@ import com.mustafa.melody.core.designsystem.component.QuickActionItem
 import com.mustafa.melody.core.designsystem.component.SectionHeader
 import com.mustafa.melody.core.designsystem.component.ShimmerBox
 import com.mustafa.melody.core.designsystem.component.SongCardShimmer
+import com.mustafa.melody.core.designsystem.component.SongCard
+import com.mustafa.melody.core.designsystem.component.PlaylistCard
 import com.mustafa.melody.core.designsystem.theme.AppDimens
 import com.mustafa.melody.core.designsystem.theme.MelodyTheme
 
@@ -78,12 +81,21 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.spacedBy(AppDimens.spacingMedium),
                         contentPadding = PaddingValues(vertical = AppDimens.spacingSmall)
                     ) {
-                        items(5) {
-                            if (uiState.isLoading) {
+                        if (uiState.isLoading) {
+                            items(5) {
                                 ShimmerBox(
                                     modifier = Modifier
                                         .width(AppDimens.cardWidthLarge)
                                         .height(AppDimens.carouselCardHeight)
+                                )
+                            }
+                        } else {
+                            items(uiState.recommendations, key = { it.id }) { song ->
+                                PlaylistCard(
+                                    title = song.title,
+                                    subtitle = song.artistName,
+                                    coverImageUrl = song.coverImageUrl,
+                                    onClick = { onIntent(HomeIntent.SongClicked(song.id)) },
                                 )
                             }
                         }
@@ -138,10 +150,40 @@ fun HomeScreen(
                         onActionClick = { onIntent(HomeIntent.SeeAllPopularSongsClicked) }
                     )
                     Column(verticalArrangement = Arrangement.spacedBy(AppDimens.spacingSmall)) {
-                        repeat(3) {
-                            if (uiState.isLoading) {
+                        if (uiState.isLoading) {
+                            repeat(3) {
                                 SongCardShimmer()
                             }
+                        } else {
+                            uiState.popularSongs.take(5).forEach { song ->
+                                SongCard(
+                                    title = song.title,
+                                    artistName = song.artistName,
+                                    coverImageUrl = song.coverImageUrl,
+                                    isLiked = song.isLiked,
+                                    onClick = { onIntent(HomeIntent.SongClicked(song.id)) },
+                                    onLikeClick = { onIntent(HomeIntent.SongLiked(song.id)) },
+                                )
+                            }
+                        }
+                    }
+                }
+
+                item {
+                    SectionHeader(
+                        title = stringResource(R.string.newest_songs),
+                        actionLabel = stringResource(R.string.see_all),
+                        onActionClick = { onIntent(HomeIntent.SeeAllNewestSongsClicked) },
+                    )
+                    Column(verticalArrangement = Arrangement.spacedBy(AppDimens.spacingSmall)) {
+                        uiState.newestSongs.take(4).forEach { song ->
+                            SongCard(
+                                title = song.title,
+                                artistName = song.artistName,
+                                coverImageUrl = song.coverImageUrl,
+                                onClick = { onIntent(HomeIntent.SongClicked(song.id)) },
+                                onLikeClick = { onIntent(HomeIntent.SongLiked(song.id)) },
+                            )
                         }
                     }
                 }
@@ -157,10 +199,37 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.spacedBy(AppDimens.spacingMedium),
                         contentPadding = PaddingValues(vertical = AppDimens.spacingSmall)
                     ) {
-                        items(5) {
-                            if (uiState.isLoading) {
+                        if (uiState.isLoading) {
+                            items(5) {
                                 PlaylistCardShimmer()
                             }
+                        } else {
+                            items(uiState.globalPlaylists, key = { it.id }) { playlist ->
+                                PlaylistCard(
+                                    title = playlist.title,
+                                    subtitle = playlist.subtitle,
+                                    coverImageUrl = playlist.coverImageUrl,
+                                    onClick = { onIntent(HomeIntent.PlaylistClicked(playlist.id)) },
+                                )
+                            }
+                        }
+                    }
+                }
+
+                item {
+                    SectionHeader(
+                        title = stringResource(R.string.local_playlists),
+                        actionLabel = stringResource(R.string.see_all),
+                        onActionClick = { onIntent(HomeIntent.SeeAllLocalPlaylistsClicked) },
+                    )
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(AppDimens.spacingMedium)) {
+                        items(uiState.localPlaylists, key = { it.id }) { playlist ->
+                            PlaylistCard(
+                                title = playlist.title,
+                                subtitle = playlist.subtitle,
+                                coverImageUrl = playlist.coverImageUrl,
+                                onClick = { onIntent(HomeIntent.PlaylistClicked(playlist.id)) },
+                            )
                         }
                     }
                 }

@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">ملودی</string>
-    <string name="welcome_message">به ملودی خوش آمدید</string>
-    <string name="greeting">سلام %1$s!</string>
 
     <string name="home">خانه</string>
     <string name="search">جستجو</string>
@@ -10,9 +8,14 @@
     <string name="profile">پروفایل</string>
 
     <string name="settings">تنظیمات</string>
+    <string name="back">بازگشت</string>
     <string name="notifications">اعلان ها</string>
+    <string name="no_notifications">اعلانی وجود ندارد</string>
+    <string name="no_notifications_description">فعالیت های جدید در اینجا نمایش داده می شوند</string>
     <string name="language">زبان</string>
+    <string name="system_language">زبان سیستم</string>
     <string name="theme">تم</string>
+    <string name="font_size">اندازه متن</string>
 
     <string name="english">انگلیسی</string>
     <string name="persian">فارسی</string>
@@ -20,12 +23,16 @@
     <string name="light_theme">روشن</string>
     <string name="dark_theme">تاریک</string>
     <string name="system_theme">پیش فرض سیستم</string>
+    <string name="font_small">کوچک</string>
+    <string name="font_default">معمولی</string>
+    <string name="font_large">بزرگ</string>
+    <string name="font_extra_large">بسیار بزرگ</string>
 
     <string name="loading">در حال بارگذاری</string>
     <string name="retry">تلاش دوباره</string>
     <string name="no_results">نتیجه ای پیدا نشد</string>
-    <string name="network_error">اتصال به شبکه امکان پذیر نیست</string>
-    <string name="preference_update_failed">به روزرسانی تنظیمات برنامه انجام نشد</string>
+    <string name="feature_requires_music_data">این قابلیت پس از اتصال اطلاعات موسیقی در دسترس خواهد بود</string>
+    <string name="try_again_later">لطفا بعدا دوباره تلاش کنید</string>
 
     <string name="profile_picture">تصویر پروفایل</string>
     <string name="see_all">مشاهده همه</string>
@@ -51,7 +58,10 @@
     <string name="start_searching">جستجوی موسیقی را شروع کنید</string>
 
     <string name="downloaded_songs">آهنگ های دانلود شده</string>
-    <string name="sort">مرتب سازی</string>
+    <string name="sort_by">مرتب سازی: %1$s</string>
+    <string name="sort_recent">جدیدترین</string>
+    <string name="sort_title">عنوان</string>
+    <string name="sort_artist">هنرمند</string>
     <string name="no_downloads">آهنگ دانلود شده ای وجود ندارد</string>
     <string name="no_downloads_description">آهنگ های آفلاین شما در اینجا نمایش داده میشوند</string>
 
@@ -59,6 +69,7 @@
     <string name="local_music">موسیقی داخلی</string>
     <string name="user_playlists">پلی لیست های شما</string>
     <string name="no_playlists">هنوز پلی لیستی وجود ندارد</string>
+    <string name="create_playlist">ساخت پلی لیست</string>
 
     <string name="guest_user">کاربر مهمان</string>
     <string name="premium">ویژه</string>
@@ -66,9 +77,74 @@
     <string name="upgrade_to_premium">ارتقا به حساب ویژه</string>
     <string name="renew_subscription">تمدید اشتراک</string>
     <string name="account_settings">تنظیمات حساب</string>
+    <string name="premium_status">وضعیت حساب ویژه</string>
+    <string name="premium_demo_description">حساب ویژه نمایشی را فعال کنید</string>
+    <string name="premium_enabled">قابلیت های ویژه فعال شدند</string>
+    <string name="premium_already_active">حساب ویژه نمایشی شما فعال است</string>
+    <string name="avatar_requires_account">برای تغییر تصویر پروفایل وارد حساب شوید</string>
 
     <string name="play_song">پخش آهنگ</string>
     <string name="like_song">پسندیدن آهنگ</string>
     <string name="unlike_song">حذف پسند آهنگ</string>
-    <string name="open_playlist">باز کردن پلی لیست</string>
+    <string name="now_playing">در حال پخش</string>
+    <string name="sleep_timer">زمان سنج خواب</string>
+    <string name="sleep_timer_started">زمان سنج خواب برای ۳۰ دقیقه تنظیم شد</string>
+    <string name="pause">توقف موقت</string>
+    <string name="download_song">دانلود آهنگ</string>
+    <string name="download_started">دانلود شروع شد</string>
+    <string name="remove_download">حذف دانلود</string>
+    <string name="premium_required_download">برای دانلود به حساب ویژه نیاز دارید</string>
+    <string name="account">حساب کاربری</string>
+    <string name="email">ایمیل</string>
+    <string name="password">رمز عبور</string>
+    <string name="sign_in">ورود</string>
+    <string name="sign_out">خروج</string>
+    <string name="create_account">ساخت حساب</string>
+    <string name="signed_in_as">وارد شده به عنوان %1$s</string>
+    <string name="demo_account_hint">تنظیمات سرور وارد نشده است؛ ورود در حالت نمایشی محلی انجام می‌شود.</string>
+    <string name="confirmation_sent">برای تأیید حساب جدید ایمیل خود را بررسی کنید.</string>
+    <string name="friends_and_messages">دوستان و پیام ها</string>
+    <string name="people">افراد</string>
+    <string name="search_users">جستجوی کاربران</string>
+    <string name="follow">دنبال کردن</string>
+    <string name="unfollow">لغو دنبال کردن</string>
+    <string name="online">آنلاین</string>
+    <string name="type_message">پیامی بنویسید</string>
+    <string name="send">ارسال</string>
+    <string name="sent">ارسال شد</string>
+    <string name="read">خوانده شد</string>
+    <string name="share_current_song">اشتراک آهنگ فعلی</string>
+    <string name="play_all">پخش همه</string>
+    <string name="shuffle">پخش تصادفی</string>
+    <string name="previous_song">آهنگ قبلی</string>
+    <string name="next_song">آهنگ بعدی</string>
+    <string name="queue_position">قطعه %1$d از %2$d</string>
+    <string name="display_name">نام نمایشی</string>
+    <string name="save_profile">ذخیره نمایه</string>
+    <string name="profile_saved">نمایه ذخیره شد</string>
+    <string name="invalid_account_fields">یک ایمیل معتبر و گذرواژه‌ای با حداقل ۶ نویسه وارد کنید.</string>
+    <string name="authentication_failed">ورود ناموفق بود. دوباره تلاش کنید.</string>
+    <string name="avatar_upload_failed">بارگذاری تصویر ناموفق بود. دوباره تلاش کنید.</string>
+    <string name="recent_conversations">گفت‌وگوهای اخیر</string>
+    <string name="shared_song">یک آهنگ هم‌رسانی شد</string>
+    <string name="no_conversations">هنوز گفت‌وگویی وجود ندارد</string>
+    <string name="public_playlists">فهرست‌های پخش عمومی</string>
+    <string name="no_public_playlists">فهرست پخش عمومی وجود ندارد</string>
+    <string name="remove_search_history_item">حذف از تاریخچه جست‌وجو</string>
+    <string name="nothing_here_yet">هنوز چیزی اینجا نیست</string>
+    <string name="playlist_name">نام پلی لیست</string>
+    <string name="create">ساختن</string>
+    <string name="cancel">لغو</string>
+    <string name="catalog_load_failed">فهرست موسیقی بارگیری نشد. اتصال اینترنت را بررسی و دوباره تلاش کنید.</string>
+    <string name="playlist">پلی لیست</string>
+    <string name="playlist_created">پلی لیست ساخته شد</string>
+    <string name="sign_in_to_create_playlist">برای ساخت پلی لیست ابری ابتدا وارد حساب شوید.</string>
+    <string name="no_songs_in_playlist">این پلی لیست هنوز آهنگی ندارد.</string>
+    <string name="social_load_failed">افراد بارگیری نشدند. اتصال و حساب خود را بررسی کنید.</string>
+    <string name="social_action_failed">عملیات دنبال کردن انجام نشد.</string>
+    <string name="sending">در حال ارسال…</string>
+    <string name="delivered">تحویل داده شد</string>
+    <string name="failed">ناموفق</string>
+    <string name="user_is_typing">%1$s در حال نوشتن است…</string>
+    <string name="shared_song_card">آهنگ اشتراک‌گذاری‌شده — برای پخش لمس کنید</string>
 </resources>

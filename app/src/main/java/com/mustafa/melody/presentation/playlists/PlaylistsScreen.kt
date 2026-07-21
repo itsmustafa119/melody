@@ -12,6 +12,17 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextButton
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,6 +31,7 @@ import com.mustafa.melody.core.designsystem.component.EmptyState
 import com.mustafa.melody.core.designsystem.component.ErrorState
 import com.mustafa.melody.core.designsystem.component.MelodyTopAppBar
 import com.mustafa.melody.core.designsystem.component.PlaylistCardShimmer
+import com.mustafa.melody.core.designsystem.component.PlaylistCard
 import com.mustafa.melody.core.designsystem.theme.AppDimens
 import com.mustafa.melody.core.designsystem.theme.MelodyTheme
 
@@ -29,6 +41,8 @@ fun PlaylistsScreen(
     onIntent: (PlaylistsIntent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showCreateDialog by remember { mutableStateOf(false) }
+    var playlistTitle by remember { mutableStateOf("") }
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -37,7 +51,14 @@ fun PlaylistsScreen(
                 onNotificationsClick = { onIntent(PlaylistsIntent.NotificationsClicked) },
                 onSettingsClick = { onIntent(PlaylistsIntent.SettingsClicked) }
             )
-        }
+        },
+        floatingActionButton = {
+            if (uiState.selectedSection == PlaylistSection.USER) {
+                FloatingActionButton(onClick = { showCreateDialog = true }) {
+                    Icon(Icons.Default.Add, stringResource(R.string.create_playlist))
+                }
+            }
+        },
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -82,13 +103,44 @@ fun PlaylistsScreen(
                 ) {
                     items(6) { PlaylistCardShimmer() }
                 }
+            } else if (uiState.playlists.isNotEmpty()) {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(vertical = AppDimens.spacingMedium),
+                    horizontalArrangement = Arrangement.spacedBy(AppDimens.gridSpacing),
+                    verticalArrangement = Arrangement.spacedBy(AppDimens.gridSpacing),
+                ) {
+                    items(uiState.playlists.size, key = { uiState.playlists[it].id }) { index ->
+                        val playlist = uiState.playlists[index]
+                        PlaylistCard(
+                            title = playlist.title,
+                            subtitle = playlist.subtitle,
+                            coverImageUrl = playlist.coverImageUrl,
+                            onClick = { onIntent(PlaylistsIntent.PlaylistClicked(playlist.id)) },
+                        )
+                    }
+                }
             } else {
                 EmptyState(
                     title = stringResource(R.string.no_playlists),
-                    onActionClick = { /* Create playlist placeholder */ }
+                    actionLabel = stringResource(R.string.create_playlist),
+                    onActionClick = { showCreateDialog = true }
                 )
             }
         }
+    }
+    if (showCreateDialog) {
+        AlertDialog(
+            onDismissRequest = { showCreateDialog = false },
+            title = { Text(stringResource(R.string.create_playlist)) },
+            text = { OutlinedTextField(value = playlistTitle, onValueChange = { playlistTitle = it }, label = { Text(stringResource(R.string.playlist_name)) }) },
+            confirmButton = { TextButton(enabled = playlistTitle.isNotBlank(), onClick = {
+                onIntent(PlaylistsIntent.CreatePlaylist(playlistTitle.trim()))
+                playlistTitle = ""
+                showCreateDialog = false
+            }) { Text(stringResource(R.string.create)) } },
+            dismissButton = { TextButton(onClick = { showCreateDialog = false }) { Text(stringResource(R.string.cancel)) } },
+        )
     }
 }
 

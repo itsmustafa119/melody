@@ -19,6 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.layout.ContentScale
+import coil3.compose.AsyncImage
 import com.mustafa.melody.core.designsystem.theme.AppDimens
 
 @Composable
@@ -42,7 +44,12 @@ fun PlaylistCard(
             contentAlignment = Alignment.Center
         ) {
             if (coverImageUrl != null) {
-                // TODO: Use Image Loader
+                AsyncImage(
+                    model = coverImageUrl,
+                    contentDescription = null,
+                    modifier = Modifier.matchParentSize(),
+                    contentScale = ContentScale.Crop,
+                )
             } else {
                 Icon(
                     imageVector = Icons.Default.LibraryMusic,

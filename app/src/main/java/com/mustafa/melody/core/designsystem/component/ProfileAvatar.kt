@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.layout.ContentScale
+import coil3.compose.AsyncImage
 import com.mustafa.melody.R
 import com.mustafa.melody.core.designsystem.theme.AppDimens
 
@@ -43,7 +45,12 @@ fun ProfileAvatar(
         contentAlignment = Alignment.Center
     ) {
         if (imageUrl != null) {
-            // TODO: Use Image Loader (Coil/Glide) when available
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = stringResource(R.string.profile_picture),
+                modifier = Modifier.matchParentSize(),
+                contentScale = ContentScale.Crop,
+            )
         } else {
             val firstChar = displayName.firstOrNull()?.toString()
             if (firstChar != null && firstChar.isNotBlank()) {

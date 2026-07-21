@@ -27,6 +27,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
+import android.content.Intent
 import com.mustafa.melody.R
 import com.mustafa.melody.core.designsystem.component.ErrorState
 import com.mustafa.melody.core.designsystem.component.MelodyTopAppBar
@@ -39,8 +47,18 @@ import com.mustafa.melody.core.designsystem.theme.MelodyTheme
 fun ProfileScreen(
     uiState: ProfileUiState,
     onIntent: (ProfileIntent) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onAvatarSelected: (android.net.Uri) -> Unit = {},
 ) {
+    val context = LocalContext.current
+    var avatarUri by rememberSaveable { mutableStateOf<String?>(null) }
+    val avatarPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        uri?.let {
+            runCatching { context.contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
+            avatarUri = it.toString()
+            onAvatarSelected(it)
+        }
+    }
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -68,8 +86,9 @@ fun ProfileScreen(
             ) {
                 ProfileAvatar(
                     displayName = uiState.displayName,
+                    imageUrl = avatarUri ?: uiState.avatarUrl,
                     modifier = Modifier.size(120.dp), // profileImageSizeLarge
-                    onClick = { onIntent(ProfileIntent.ChangeAvatarClicked) }
+                    onClick = { avatarPicker.launch(arrayOf("image/*")) }
                 )
 
                 Spacer(modifier = Modifier.height(AppDimens.spacingMedium))
@@ -111,6 +130,15 @@ fun ProfileScreen(
                 }
 
                 Spacer(modifier = Modifier.height(AppDimens.sectionSpacing))
+
+                OutlinedButton(
+                    onClick = { onIntent(ProfileIntent.AccountClicked) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) { Text(stringResource(R.string.account)) }
+                OutlinedButton(
+                    onClick = { onIntent(ProfileIntent.SocialClicked) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) { Text(stringResource(R.string.friends_and_messages)) }
 
                 HorizontalDivider(thickness = AppDimens.dividerThickness)
 

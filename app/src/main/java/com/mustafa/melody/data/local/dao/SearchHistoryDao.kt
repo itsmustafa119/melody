@@ -21,8 +21,8 @@ interface SearchHistoryDao {
     )
     fun observeRecent(limit: Int): Flow<List<SearchHistoryEntity>>
 
-    @Query("DELETE FROM search_history WHERE query = :query")
-    suspend fun deleteByQuery(query: String)
+    @Query("DELETE FROM search_history WHERE search_query = :searchQuery")
+    suspend fun deleteByQuery(searchQuery: String)
 
     @Query("DELETE FROM search_history")
     suspend fun clearAll()
