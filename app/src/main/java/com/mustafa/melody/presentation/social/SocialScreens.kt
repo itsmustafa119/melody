@@ -41,6 +41,8 @@ import com.mustafa.melody.domain.model.ChatMessage
 import com.mustafa.melody.domain.model.MessageStatus
 import com.mustafa.melody.domain.model.SocialProfile
 import com.mustafa.melody.domain.model.Song
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.itemKey
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -147,7 +149,7 @@ fun SocialScreen(
 fun ChatScreen(
     userId: String,
     userName: String,
-    messages: List<ChatMessage>,
+    messages: LazyPagingItems<ChatMessage>,
     isOtherUserTyping: Boolean,
     currentSong: Song?,
     onBack: () -> Unit,
@@ -172,8 +174,14 @@ fun ChatScreen(
             LazyColumn(
                 modifier = Modifier.weight(1f).padding(AppDimens.spacingMedium),
                 verticalArrangement = Arrangement.spacedBy(AppDimens.spacingSmall),
+                reverseLayout = true,
             ) {
-                items(messages, key = { it.messageId }) { message ->
+                if (isOtherUserTyping) item { Text(stringResource(R.string.user_is_typing, userName)) }
+                items(
+                    count = messages.itemCount,
+                    key = messages.itemKey { it.messageId },
+                ) { index ->
+                    val message = messages[index] ?: return@items
                     Column(
                         Modifier.fillMaxWidth(),
                         horizontalAlignment = if (message.senderId == "me") Alignment.End else Alignment.Start,
@@ -210,7 +218,6 @@ fun ChatScreen(
                         )
                     }
                 }
-                if (isOtherUserTyping) item { Text(stringResource(R.string.user_is_typing, userName)) }
             }
             Row(Modifier.fillMaxWidth().padding(AppDimens.spacingSmall), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(enabled = currentSong != null, onClick = { currentSong?.let { onShareSong(it.id) } }) {

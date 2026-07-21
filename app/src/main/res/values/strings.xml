@@ -88,11 +88,14 @@
     <string name="unlike_song">Unlike song</string>
     <string name="now_playing">Now playing</string>
     <string name="sleep_timer">Sleep timer</string>
-    <string name="sleep_timer_started">Sleep timer set for 30 minutes</string>
+    <string name="sleep_timer_started">Sleep timer started</string>
+    <string name="choose_sleep_timer">Choose sleep timer</string>
+    <string name="minutes_short">%1$d min</string>
     <string name="pause">Pause</string>
     <string name="download_song">Download song</string>
     <string name="download_started">Download started</string>
     <string name="remove_download">Remove download</string>
+    <string name="remove_song">Remove song</string>
     <string name="premium_required_download">Premium is required for downloads</string>
     <string name="account">Account</string>
     <string name="email">Email</string>

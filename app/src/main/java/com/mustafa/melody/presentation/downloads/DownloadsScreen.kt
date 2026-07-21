@@ -40,11 +40,16 @@ import com.mustafa.melody.core.designsystem.component.SongCardShimmer
 import com.mustafa.melody.core.designsystem.component.SongCard
 import com.mustafa.melody.core.designsystem.theme.AppDimens
 import com.mustafa.melody.core.designsystem.theme.MelodyTheme
+import com.mustafa.melody.domain.model.DownloadedSong
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.itemKey
+import androidx.paging.LoadState
 
 @Composable
 fun DownloadsScreen(
     uiState: DownloadsUiState,
     onIntent: (DownloadsIntent) -> Unit,
+    pagedSongs: LazyPagingItems<DownloadedSong>? = null,
     modifier: Modifier = Modifier
 ) {
     var showSortMenu by remember { mutableStateOf(false) }
@@ -96,16 +101,32 @@ fun DownloadsScreen(
                     description = stringResource(uiState.errorMessageResId),
                     onRetry = { onIntent(DownloadsIntent.Retry) }
                 )
-            } else if (uiState.isLoading) {
+            } else if (uiState.isLoading || pagedSongs?.loadState?.refresh is LoadState.Loading) {
                 repeat(5) { SongCardShimmer() }
-            } else if (uiState.songs.isEmpty()) {
+            } else if ((pagedSongs?.itemCount ?: uiState.songs.size) == 0) {
                 EmptyState(
                     title = stringResource(R.string.no_downloads),
                     description = stringResource(R.string.no_downloads_description)
                 )
             } else {
                 LazyColumn {
-                    items(uiState.songs, key = { it.songId }) { song ->
+                    if (pagedSongs != null) items(
+                        count = pagedSongs.itemCount,
+                        key = pagedSongs.itemKey { it.songId },
+                    ) { index ->
+                        val song = pagedSongs[index] ?: return@items
+                        DownloadRow(song, onIntent)
+                    } else items(uiState.songs, key = { it.songId }) { song ->
+                        DownloadRow(song, onIntent)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DownloadRow(song: DownloadedSong, onIntent: (DownloadsIntent) -> Unit) {
                         val dismissState = rememberSwipeToDismissBoxState()
                         LaunchedEffect(dismissState.currentValue) {
                             if (dismissState.currentValue != SwipeToDismissBoxValue.Settled) {
@@ -145,13 +166,7 @@ fun DownloadsScreen(
                                 }
                             }
                         }
-                    }
-                }
-            }
-        }
-    }
 }
-
 @Preview(showBackground = true)
 @Composable
 fun DownloadsScreenPreview() {

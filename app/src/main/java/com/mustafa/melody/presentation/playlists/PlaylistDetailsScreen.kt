@@ -30,6 +30,9 @@ import com.mustafa.melody.core.designsystem.component.SongCard
 import com.mustafa.melody.core.designsystem.component.SongCardShimmer
 import com.mustafa.melody.core.designsystem.theme.AppDimens
 import com.mustafa.melody.domain.model.Song
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.itemKey
+import androidx.paging.LoadState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,7 +43,9 @@ fun PlaylistDetailsScreen(
     likedSongIds: Set<String>,
     onToggleLike: (String) -> Unit,
     onRetry: () -> Unit,
+    pagedSongs: LazyPagingItems<Song>? = null,
 ) {
+    val visibleSongs = pagedSongs?.itemSnapshotList?.items ?: state.songs
     Scaffold(topBar = {
         TopAppBar(
             title = { Text(state.playlist?.title ?: stringResource(R.string.playlist)) },
@@ -49,23 +54,36 @@ fun PlaylistDetailsScreen(
     }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).padding(horizontal = AppDimens.spacingMedium)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(AppDimens.spacingSmall)) {
-                Button(enabled = state.songs.isNotEmpty(), onClick = { onPlayQueue(state.songs, 0) }, modifier = Modifier.weight(1f)) {
+                Button(enabled = visibleSongs.isNotEmpty(), onClick = { onPlayQueue(visibleSongs, 0) }, modifier = Modifier.weight(1f)) {
                     Icon(Icons.Default.PlayArrow, null); Text(stringResource(R.string.play_all))
                 }
-                OutlinedButton(enabled = state.songs.isNotEmpty(), onClick = { onPlayQueue(state.songs.shuffled(), 0) }, modifier = Modifier.weight(1f)) {
+                OutlinedButton(enabled = visibleSongs.isNotEmpty(), onClick = { onPlayQueue(visibleSongs.shuffled(), 0) }, modifier = Modifier.weight(1f)) {
                     Icon(Icons.Default.Shuffle, null); Text(stringResource(R.string.shuffle))
                 }
             }
             when {
-                state.isLoading -> repeat(6) { SongCardShimmer() }
+                state.isLoading || pagedSongs?.loadState?.refresh is LoadState.Loading -> repeat(6) { SongCardShimmer() }
                 state.errorMessageResId != null -> ErrorState(
                     title = stringResource(R.string.something_went_wrong),
                     description = stringResource(state.errorMessageResId),
                     onRetry = onRetry,
                 )
-                state.songs.isEmpty() -> EmptyState(title = stringResource(R.string.no_songs_in_playlist))
+                (pagedSongs?.itemCount ?: state.songs.size) == 0 -> EmptyState(title = stringResource(R.string.no_songs_in_playlist))
                 else -> LazyColumn {
-                    items(state.songs, key = { it.id }) { song ->
+                    if (pagedSongs != null) items(
+                        count = pagedSongs.itemCount,
+                        key = pagedSongs.itemKey { it.id },
+                    ) { index ->
+                        val song = pagedSongs[index] ?: return@items
+                        SongCard(
+                            title = song.title,
+                            artistName = song.artistName,
+                            coverImageUrl = song.coverImageUrl,
+                            isLiked = song.id in likedSongIds,
+                            onClick = { onPlayQueue(visibleSongs, visibleSongs.indexOf(song).coerceAtLeast(0)) },
+                            onLikeClick = { onToggleLike(song.id) },
+                        )
+                    } else items(state.songs, key = { it.id }) { song ->
                         SongCard(
                             title = song.title,
                             artistName = song.artistName,

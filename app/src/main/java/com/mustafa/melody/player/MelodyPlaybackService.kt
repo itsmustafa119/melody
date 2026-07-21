@@ -42,23 +42,30 @@ class MelodyPlaybackService : MediaSessionService() {
     @Inject lateinit var recentlyPlayedDao: RecentlyPlayedDao
 
     private lateinit var player: ExoPlayer
+    private lateinit var crossfadePlayer: ExoPlayer
     private lateinit var mediaSession: MediaSession
     private lateinit var cache: SimpleCache
     private val handler = Handler(Looper.getMainLooper())
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val sleepAction = Runnable { player.pause() }
     private var queueSongs: List<Song> = emptyList()
+    private var queueItems: List<MediaItem> = emptyList()
+    private var crossfadeTargetIndex = C.INDEX_UNSET
     private val progressAction = object : Runnable {
         override fun run() {
             if (::player.isInitialized) {
                 val duration = player.duration.takeIf { it > 0 && it != C.TIME_UNSET } ?: 0
                 val position = player.currentPosition.coerceAtLeast(0)
-                // A short fade at track boundaries avoids an abrupt transition while retaining
-                // gapless queue playback supported by ExoPlayer.
                 val remaining = (duration - position).coerceAtLeast(0)
-                player.volume = if (duration > 0 && remaining < CROSSFADE_MS) {
-                    (remaining.toFloat() / CROSSFADE_MS).coerceIn(MIN_FADE_VOLUME, 1f)
-                } else 1f
+                if (
+                    player.isPlaying && duration > 0 && remaining > 0 && remaining < CROSSFADE_MS &&
+                    player.hasNextMediaItem() && crossfadeTargetIndex == C.INDEX_UNSET
+                ) beginCrossfade(player.currentMediaItemIndex + 1)
+                if (crossfadeTargetIndex != C.INDEX_UNSET) {
+                    val mix = (crossfadePlayer.currentPosition.toFloat() / CROSSFADE_MS).coerceIn(0f, 1f)
+                    player.volume = 1f - mix
+                    crossfadePlayer.volume = mix
+                } else player.volume = 1f
                 updatePlaybackState(position, duration)
             }
             handler.postDelayed(this, PROGRESS_INTERVAL_MS)
@@ -68,6 +75,9 @@ class MelodyPlaybackService : MediaSessionService() {
     private val listener = object : Player.Listener {
         override fun onIsPlayingChanged(isPlaying: Boolean) {
             PlaybackStore.update { it.copy(isPlaying = isPlaying) }
+            if (crossfadeTargetIndex != C.INDEX_UNSET) {
+                if (isPlaying) crossfadePlayer.play() else crossfadePlayer.pause()
+            }
         }
 
         override fun onEvents(player: Player, events: Player.Events) {
@@ -75,8 +85,14 @@ class MelodyPlaybackService : MediaSessionService() {
         }
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-            player.volume = 1f
             val index = player.currentMediaItemIndex.coerceAtLeast(0)
+            if (index == crossfadeTargetIndex) {
+                val overlapPosition = crossfadePlayer.currentPosition.coerceAtLeast(0)
+                crossfadePlayer.stop()
+                crossfadeTargetIndex = C.INDEX_UNSET
+                player.seekTo(overlapPosition)
+            } else cancelCrossfade()
+            player.volume = 1f
             val song = queueSongs.getOrNull(index) ?: return
             PlaybackStore.update {
                 it.copy(
@@ -128,6 +144,17 @@ class MelodyPlaybackService : MediaSessionService() {
             .setHandleAudioBecomingNoisy(true)
             .build()
             .also { it.addListener(listener) }
+        crossfadePlayer = ExoPlayer.Builder(this)
+            .setMediaSourceFactory(androidx.media3.exoplayer.source.DefaultMediaSourceFactory(cacheFactory))
+            .setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(C.USAGE_MEDIA)
+                    .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+                    .build(),
+                false,
+            )
+            .setHandleAudioBecomingNoisy(false)
+            .build()
         mediaSession = MediaSession.Builder(this, player).build()
         handler.post(progressAction)
     }
@@ -136,12 +163,15 @@ class MelodyPlaybackService : MediaSessionService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
-            ACTION_PLAY -> serviceScope.launch { play(intent) }
+            ACTION_PLAY -> { cancelCrossfade(); serviceScope.launch { play(intent) } }
             ACTION_TOGGLE -> if (player.isPlaying) player.pause() else player.play()
-            ACTION_SEEK -> player.seekTo(intent.getLongExtra(EXTRA_POSITION, 0))
-            ACTION_NEXT -> if (player.hasNextMediaItem()) player.seekToNextMediaItem()
-            ACTION_PREVIOUS -> if (player.currentPosition > RESTART_THRESHOLD_MS) player.seekTo(0)
+            ACTION_SEEK -> { cancelCrossfade(); player.seekTo(intent.getLongExtra(EXTRA_POSITION, 0)) }
+            ACTION_NEXT -> { cancelCrossfade(); if (player.hasNextMediaItem()) player.seekToNextMediaItem() }
+            ACTION_PREVIOUS -> {
+                cancelCrossfade()
+                if (player.currentPosition > RESTART_THRESHOLD_MS) player.seekTo(0)
                 else if (player.hasPreviousMediaItem()) player.seekToPreviousMediaItem()
+            }
             ACTION_SPEED -> player.playbackParameters = PlaybackParameters(intent.getFloatExtra(EXTRA_SPEED, 1f))
             ACTION_SLEEP -> {
                 handler.removeCallbacks(sleepAction)
@@ -169,11 +199,26 @@ class MelodyPlaybackService : MediaSessionService() {
                 album = albums.getOrElse(index) { "" },
             )
         }
-        val items = queueSongs.map { song -> createMediaItem(song) }
-        val startIndex = intent.getIntExtra(EXTRA_START_INDEX, 0).coerceIn(items.indices)
-        player.setMediaItems(items, startIndex, 0)
+        queueItems = queueSongs.map { song -> createMediaItem(song) }
+        val startIndex = intent.getIntExtra(EXTRA_START_INDEX, 0).coerceIn(queueItems.indices)
+        player.setMediaItems(queueItems, startIndex, 0)
         player.prepare()
         player.play()
+    }
+
+    private fun beginCrossfade(targetIndex: Int) {
+        val item = queueItems.getOrNull(targetIndex) ?: return
+        crossfadeTargetIndex = targetIndex
+        crossfadePlayer.volume = 0f
+        crossfadePlayer.setMediaItem(item)
+        crossfadePlayer.prepare()
+        crossfadePlayer.play()
+    }
+
+    private fun cancelCrossfade() {
+        if (::crossfadePlayer.isInitialized) crossfadePlayer.stop()
+        crossfadeTargetIndex = C.INDEX_UNSET
+        if (::player.isInitialized) player.volume = 1f
     }
 
     private suspend fun createMediaItem(song: Song): MediaItem {
@@ -217,6 +262,7 @@ class MelodyPlaybackService : MediaSessionService() {
         player.removeListener(listener)
         mediaSession.release()
         player.release()
+        crossfadePlayer.release()
         cache.release()
         handler.removeCallbacks(sleepAction)
         handler.removeCallbacks(progressAction)
@@ -245,6 +291,5 @@ class MelodyPlaybackService : MediaSessionService() {
         private const val PROGRESS_INTERVAL_MS = 500L
         private const val CROSSFADE_MS = 3_000L
         private const val RESTART_THRESHOLD_MS = 5_000L
-        private const val MIN_FADE_VOLUME = 0.08f
     }
 }

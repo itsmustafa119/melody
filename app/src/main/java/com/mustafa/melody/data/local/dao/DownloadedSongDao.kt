@@ -41,6 +41,12 @@ interface DownloadedSongDao {
     )
     fun pagingSource(): PagingSource<Int, DownloadedSongEntity>
 
+    @Query("SELECT * FROM downloaded_songs ORDER BY title COLLATE NOCASE ASC")
+    fun pagingSourceByTitle(): PagingSource<Int, DownloadedSongEntity>
+
+    @Query("SELECT * FROM downloaded_songs ORDER BY artist_name COLLATE NOCASE ASC")
+    fun pagingSourceByArtist(): PagingSource<Int, DownloadedSongEntity>
+
     @Query("DELETE FROM downloaded_songs WHERE song_id = :songId")
     suspend fun deleteBySongId(songId: String)
 

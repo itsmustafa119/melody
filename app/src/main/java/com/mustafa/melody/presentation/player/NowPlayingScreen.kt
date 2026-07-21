@@ -32,6 +32,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,12 +49,13 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.toBitmap
 import androidx.palette.graphics.Palette
 import com.mustafa.melody.R
 import com.mustafa.melody.core.designsystem.theme.AppDimens
+import com.mustafa.melody.core.designsystem.theme.PlayerFallbackColor
+import com.mustafa.melody.core.designsystem.theme.PlayerVisualizerColor
 import com.mustafa.melody.player.PlaybackUiState
 
 @Composable
@@ -65,8 +68,9 @@ fun NowPlayingScreen(
     onNext: () -> Unit,
     onSeek: (Long) -> Unit,
     onSpeed: (Float) -> Unit,
-    onSleepTimer: () -> Unit,
+    onSleepTimer: (Int) -> Unit,
     onDownload: () -> Unit,
+    artworkModifier: Modifier = Modifier,
 ) {
     val song = state.song ?: return
     val transition = rememberInfiniteTransition(label = "cover")
@@ -82,7 +86,8 @@ fun NowPlayingScreen(
         animationSpec = infiniteRepeatable(tween(1_400, easing = LinearEasing)),
         label = "visualizer",
     )
-    var dominantColor by remember(song.id) { mutableStateOf(Color(0xFF24143F)) }
+    var dominantColor by remember(song.id) { mutableStateOf(PlayerFallbackColor) }
+    var showSleepTimer by remember { mutableStateOf(false) }
     Scaffold { padding ->
         Column(
             modifier = Modifier
@@ -101,14 +106,14 @@ fun NowPlayingScreen(
                 Text(stringResource(R.string.now_playing), modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
                 Row {
                     IconButton(onClick = onDownload) { Icon(Icons.Default.Download, stringResource(R.string.download_song)) }
-                    IconButton(onClick = onSleepTimer) { Icon(Icons.Default.Timer, stringResource(R.string.sleep_timer)) }
+                    IconButton(onClick = { showSleepTimer = true }) { Icon(Icons.Default.Timer, stringResource(R.string.sleep_timer)) }
                 }
             }
-            Spacer(Modifier.height(32.dp))
+            Spacer(Modifier.height(AppDimens.spacingExtraLarge))
             AsyncImage(
                 model = song.coverImageUrl,
                 contentDescription = song.title,
-                modifier = Modifier.size(280.dp).rotate(rotation).clip(CircleShape),
+                modifier = artworkModifier.size(AppDimens.nowPlayingCover).rotate(rotation).clip(CircleShape),
                 contentScale = ContentScale.Crop,
                 onSuccess = { result ->
                     Palette.from(result.result.image.toBitmap()).generate { palette ->
@@ -122,14 +127,14 @@ fun NowPlayingScreen(
             Text(song.title, style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center)
             Text(song.artistName, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(AppDimens.spacingMedium))
-            Canvas(Modifier.fillMaxWidth().height(50.dp)) {
+            Canvas(Modifier.fillMaxWidth().height(AppDimens.visualizerHeight)) {
                 val bars = 32
                 val barWidth = size.width / (bars * 2)
                 repeat(bars) { index ->
                     val wave = kotlin.math.sin(visualizerPhase + index * 0.62f)
                     val factor = if (state.isPlaying) (0.28f + kotlin.math.abs(wave) * 0.72f) else 0.22f
                     drawLine(
-                        color = Color(0xFF7C4DFF),
+                        color = PlayerVisualizerColor,
                         start = androidx.compose.ui.geometry.Offset(index * barWidth * 2, size.height / 2 - size.height * factor / 2),
                         end = androidx.compose.ui.geometry.Offset(index * barWidth * 2, size.height / 2 + size.height * factor / 2),
                         strokeWidth = barWidth,
@@ -150,17 +155,17 @@ fun NowPlayingScreen(
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onPrevious, enabled = state.hasPrevious || state.positionMs > 0) {
-                    Icon(Icons.Default.SkipPrevious, stringResource(R.string.previous_song), Modifier.size(36.dp))
+                    Icon(Icons.Default.SkipPrevious, stringResource(R.string.previous_song), Modifier.size(AppDimens.playerSkipIcon))
                 }
-                IconButton(onClick = onToggle, modifier = Modifier.size(72.dp)) {
+                IconButton(onClick = onToggle, modifier = Modifier.size(AppDimens.playerMainControl)) {
                     Icon(
                         if (state.isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                         stringResource(if (state.isPlaying) R.string.pause else R.string.play_song),
-                        modifier = Modifier.size(48.dp),
+                        modifier = Modifier.size(AppDimens.playerMainIcon),
                     )
                 }
                 IconButton(onClick = onNext, enabled = state.hasNext) {
-                    Icon(Icons.Default.SkipNext, stringResource(R.string.next_song), Modifier.size(36.dp))
+                    Icon(Icons.Default.SkipNext, stringResource(R.string.next_song), Modifier.size(AppDimens.playerSkipIcon))
                 }
             }
             Row(
@@ -176,5 +181,28 @@ fun NowPlayingScreen(
                 }
             }
         }
+    }
+    if (showSleepTimer) {
+        AlertDialog(
+            onDismissRequest = { showSleepTimer = false },
+            title = { Text(stringResource(R.string.choose_sleep_timer)) },
+            text = {
+                Column {
+                    listOf(15, 30, 45, 60).forEach { minutes ->
+                        TextButton(
+                            onClick = {
+                                showSleepTimer = false
+                                onSleepTimer(minutes)
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) { Text(stringResource(R.string.minutes_short, minutes)) }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                TextButton(onClick = { showSleepTimer = false }) { Text(stringResource(R.string.cancel)) }
+            },
+        )
     }
 }

@@ -19,6 +19,8 @@ data class HomeCatalog(
 interface MusicCatalogRepository {
     suspend fun homeCatalog(): HomeCatalog
     fun pagedSearch(query: String, filter: CatalogFilter): Flow<PagingData<Song>>
+    fun pagedPlaylists(kind: com.mustafa.melody.domain.model.PlaylistKind): Flow<PagingData<MusicPlaylist>>
+    fun pagedPlaylistSongs(playlistId: String): Flow<PagingData<Song>>
     suspend fun song(songId: String): Song?
     suspend fun playlists(): List<MusicPlaylist>
     suspend fun createPlaylist(title: String): MusicPlaylist

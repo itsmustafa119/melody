@@ -13,6 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalContext
@@ -29,6 +32,7 @@ import com.mustafa.melody.core.navigation.navigateToTopLevelDestination
 import com.mustafa.melody.core.navigation.topLevelDestinations
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MelodyApp(
     appUiState: AppUiState,
@@ -49,15 +53,23 @@ fun MelodyApp(
     }
     val showBottomBar = currentDestination?.route in topLevelDestinations.map { it.route }
 
+    SharedTransitionLayout {
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             Column {
-                if (playbackState.song != null && currentDestination?.route != AppRoute.NOW_PLAYING) {
+                AnimatedVisibility(
+                    visible = playbackState.song != null && currentDestination?.route != AppRoute.NOW_PLAYING,
+                ) {
+                    val song = playbackState.song
                     MiniPlayer(
                         state = playbackState,
                         onClick = { navController.navigate(AppRoute.NOW_PLAYING) { launchSingleTop = true } },
                         onToggle = { PlaybackStore.toggle(context) },
+                        artworkModifier = if (song == null) Modifier else Modifier.sharedElement(
+                            sharedContentState = rememberSharedContentState("player-artwork-${song.id}"),
+                            animatedVisibilityScope = this,
+                        ),
                     )
                 }
                 if (showBottomBar) {
@@ -97,5 +109,6 @@ fun MelodyApp(
             onShowMessage = showMessage,
             modifier = Modifier.padding(innerPadding)
         )
+    }
     }
 }

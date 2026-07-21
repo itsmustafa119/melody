@@ -33,7 +33,9 @@ object AppDimens {
     val albumCoverSmall = 48.dp
     val albumCoverMedium = 120.dp
     val albumCoverLarge = 240.dp
+    val nowPlayingCover = 280.dp
     val profileImageSize = 40.dp
+    val profileImageLarge = 120.dp
     val dividerThickness = 1.dp
     val cardElevation = 2.dp
 
@@ -51,4 +53,10 @@ object AppDimens {
     val cardWidthMedium = 160.dp
     val cardWidthLarge = 200.dp
     val carouselCardHeight = 220.dp
+    val visualizerHeight = 50.dp
+    val playerMainControl = 72.dp
+    val playerMainIcon = 48.dp
+    val playerSkipIcon = 36.dp
+    val shimmerTitleHeight = 20.dp
+    val shimmerSubtitleHeight = 16.dp
 }

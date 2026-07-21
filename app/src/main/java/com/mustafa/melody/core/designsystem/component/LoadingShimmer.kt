@@ -71,9 +71,9 @@ fun SongCardShimmer(modifier: Modifier = Modifier) {
         ShimmerBox(modifier = Modifier.size(AppDimens.albumCoverSmall))
         Spacer(modifier = Modifier.width(AppDimens.spacingMedium))
         Column(modifier = Modifier.weight(1f)) {
-            ShimmerBox(modifier = Modifier.height(20.dp).fillMaxWidth(0.7f))
+            ShimmerBox(modifier = Modifier.height(AppDimens.shimmerTitleHeight).fillMaxWidth(0.7f))
             Spacer(modifier = Modifier.height(AppDimens.spacingExtraSmall))
-            ShimmerBox(modifier = Modifier.height(16.dp).fillMaxWidth(0.4f))
+            ShimmerBox(modifier = Modifier.height(AppDimens.shimmerSubtitleHeight).fillMaxWidth(0.4f))
         }
     }
 }
@@ -83,6 +83,6 @@ fun PlaylistCardShimmer(modifier: Modifier = Modifier) {
     Column(modifier = modifier.width(AppDimens.cardWidthMedium)) {
         ShimmerBox(modifier = Modifier.size(AppDimens.cardWidthMedium))
         Spacer(modifier = Modifier.height(AppDimens.spacingSmall))
-        ShimmerBox(modifier = Modifier.height(20.dp).fillMaxWidth(0.8f))
+        ShimmerBox(modifier = Modifier.height(AppDimens.shimmerTitleHeight).fillMaxWidth(0.8f))
     }
 }

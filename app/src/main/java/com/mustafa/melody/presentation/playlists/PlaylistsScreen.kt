@@ -34,11 +34,16 @@ import com.mustafa.melody.core.designsystem.component.PlaylistCardShimmer
 import com.mustafa.melody.core.designsystem.component.PlaylistCard
 import com.mustafa.melody.core.designsystem.theme.AppDimens
 import com.mustafa.melody.core.designsystem.theme.MelodyTheme
+import com.mustafa.melody.domain.model.MusicPlaylist
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.itemKey
+import androidx.paging.LoadState
 
 @Composable
 fun PlaylistsScreen(
     uiState: PlaylistsUiState,
     onIntent: (PlaylistsIntent) -> Unit,
+    pagedPlaylists: LazyPagingItems<MusicPlaylist>? = null,
     modifier: Modifier = Modifier
 ) {
     var showCreateDialog by remember { mutableStateOf(false) }
@@ -94,7 +99,7 @@ fun PlaylistsScreen(
                     description = stringResource(uiState.errorMessageResId),
                     onRetry = { onIntent(PlaylistsIntent.Retry) }
                 )
-            } else if (uiState.isLoading) {
+            } else if (uiState.isLoading || pagedPlaylists?.loadState?.refresh is LoadState.Loading) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
                     contentPadding = PaddingValues(vertical = AppDimens.spacingMedium),
@@ -103,15 +108,16 @@ fun PlaylistsScreen(
                 ) {
                     items(6) { PlaylistCardShimmer() }
                 }
-            } else if (uiState.playlists.isNotEmpty()) {
+            } else if ((pagedPlaylists?.itemCount ?: uiState.playlists.size) > 0) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
                     contentPadding = PaddingValues(vertical = AppDimens.spacingMedium),
                     horizontalArrangement = Arrangement.spacedBy(AppDimens.gridSpacing),
                     verticalArrangement = Arrangement.spacedBy(AppDimens.gridSpacing),
                 ) {
-                    items(uiState.playlists.size, key = { uiState.playlists[it].id }) { index ->
-                        val playlist = uiState.playlists[index]
+                    val count = pagedPlaylists?.itemCount ?: uiState.playlists.size
+                    items(count, key = if (pagedPlaylists != null) pagedPlaylists.itemKey { it.id } else { index -> uiState.playlists[index].id }) { index ->
+                        val playlist = pagedPlaylists?.get(index) ?: uiState.playlists.getOrNull(index) ?: return@items
                         PlaylistCard(
                             title = playlist.title,
                             subtitle = playlist.subtitle,

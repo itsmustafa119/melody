@@ -5,6 +5,7 @@ import androidx.room.Query
 import androidx.room.Upsert
 import com.mustafa.melody.data.local.entity.RecentlyPlayedEntity
 import kotlinx.coroutines.flow.Flow
+import androidx.paging.PagingSource
 
 @Dao
 interface RecentlyPlayedDao {
@@ -13,6 +14,9 @@ interface RecentlyPlayedDao {
 
     @Query("SELECT * FROM recently_played ORDER BY played_at DESC LIMIT :limit")
     fun observeRecent(limit: Int = 100): Flow<List<RecentlyPlayedEntity>>
+
+    @Query("SELECT * FROM recently_played ORDER BY played_at DESC")
+    fun pagingSource(): PagingSource<Int, RecentlyPlayedEntity>
 
     @Query("DELETE FROM recently_played WHERE song_id = :songId")
     suspend fun delete(songId: String)

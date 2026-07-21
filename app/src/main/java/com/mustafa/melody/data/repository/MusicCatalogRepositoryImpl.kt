@@ -49,6 +49,16 @@ class MusicCatalogRepositoryImpl @Inject constructor(
         pagingSourceFactory = { CatalogPagingSource(query, filter) },
     ).flow
 
+    override fun pagedPlaylists(kind: PlaylistKind) = Pager(
+        config = PagingConfig(pageSize = PAGE_SIZE, prefetchDistance = 8, enablePlaceholders = false),
+        pagingSourceFactory = { PlaylistPagingSource(kind) },
+    ).flow
+
+    override fun pagedPlaylistSongs(playlistId: String) = Pager(
+        config = PagingConfig(pageSize = PAGE_SIZE, prefetchDistance = 8, enablePlaceholders = false),
+        pagingSourceFactory = { PlaylistSongsPagingSource(playlistId) },
+    ).flow
+
     override suspend fun song(songId: String): Song? =
         runCatching {
             provider.client?.from("songs")?.select {
@@ -141,6 +151,52 @@ class MusicCatalogRepositoryImpl @Inject constructor(
                     nextKey = if (fallback.size < params.loadSize) null else page + 1,
                 ) else LoadResult.Error(error)
             }
+        }
+    }
+
+    private inner class PlaylistPagingSource(
+        private val kind: PlaylistKind,
+    ) : PagingSource<Int, MusicPlaylist>() {
+        override fun getRefreshKey(state: PagingState<Int, MusicPlaylist>) =
+            state.anchorPosition?.let(state::closestPageToPosition)?.let { it.prevKey?.plus(1) ?: it.nextKey?.minus(1) }
+
+        override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MusicPlaylist> {
+            val page = params.key ?: 0
+            val offset = page * params.loadSize
+            return runCatching {
+                val data = provider.client?.from("playlists")?.select {
+                    filter { eq("kind", kind.name) }
+                    range(offset.toLong()..(offset + params.loadSize - 1).toLong())
+                }?.decodeList<PlaylistDto>()?.map(PlaylistDto::toDomain)
+                    ?: (DemoCatalog.playlists + localUserPlaylists).filter { it.kind == kind }
+                        .drop(offset).take(params.loadSize)
+                LoadResult.Page(data, if (page == 0) null else page - 1, if (data.size < params.loadSize) null else page + 1)
+            }.getOrElse { LoadResult.Error(it) }
+        }
+    }
+
+    private inner class PlaylistSongsPagingSource(
+        private val playlistId: String,
+    ) : PagingSource<Int, Song>() {
+        override fun getRefreshKey(state: PagingState<Int, Song>) =
+            state.anchorPosition?.let(state::closestPageToPosition)?.let { it.prevKey?.plus(1) ?: it.nextKey?.minus(1) }
+
+        override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Song> {
+            val page = params.key ?: 0
+            val offset = page * params.loadSize
+            return runCatching {
+                val local = (DemoCatalog.playlists + localUserPlaylists).find { it.id == playlistId }
+                val data = if (local != null) {
+                    local.songIds.drop(offset).take(params.loadSize).mapNotNull { id -> DemoCatalog.songs.find { it.id == id } }
+                } else {
+                    val client = provider.client
+                    if (client == null) emptyList() else client.from("playlist_songs").select {
+                            filter { eq("playlist_id", playlistId) }
+                            range(offset.toLong()..(offset + params.loadSize - 1).toLong())
+                        }.decodeList<PlaylistSongDto>().mapNotNull { song(it.songId) }
+                }
+                LoadResult.Page(data, if (page == 0) null else page - 1, if (data.size < params.loadSize) null else page + 1)
+            }.getOrElse { LoadResult.Error(it) }
         }
     }
 

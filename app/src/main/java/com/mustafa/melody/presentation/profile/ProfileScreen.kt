@@ -26,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.getValue
@@ -87,7 +86,7 @@ fun ProfileScreen(
                 ProfileAvatar(
                     displayName = uiState.displayName,
                     imageUrl = avatarUri ?: uiState.avatarUrl,
-                    modifier = Modifier.size(120.dp), // profileImageSizeLarge
+                    modifier = Modifier.size(AppDimens.profileImageLarge),
                     onClick = { avatarPicker.launch(arrayOf("image/*")) }
                 )
 

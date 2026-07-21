@@ -12,6 +12,11 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,6 +32,7 @@ sealed interface PlaylistsEffect {
     data class ShowError(val messageResId: Int) : PlaylistsEffect
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class PlaylistsViewModel @Inject constructor(
     private val catalogRepository: MusicCatalogRepository,
@@ -38,6 +44,13 @@ class PlaylistsViewModel @Inject constructor(
     private val effectChannel = Channel<PlaylistsEffect>(Channel.BUFFERED)
     val effects = effectChannel.receiveAsFlow()
     private var allPlaylists: List<MusicPlaylist> = emptyList()
+    private val selectedKind = MutableStateFlow(PlaylistKind.WORLD)
+    private val openedPlaylistId = MutableStateFlow("")
+
+    val pagedPlaylists = selectedKind.flatMapLatest(catalogRepository::pagedPlaylists).cachedIn(viewModelScope)
+    val pagedPlaylistSongs = openedPlaylistId.flatMapLatest { id ->
+        if (id.isBlank()) flowOf(PagingData.empty()) else catalogRepository.pagedPlaylistSongs(id)
+    }.cachedIn(viewModelScope)
 
     init { refresh() }
 
@@ -51,16 +64,10 @@ class PlaylistsViewModel @Inject constructor(
     }
 
     fun openPlaylist(playlistId: String) {
-        viewModelScope.launch {
-            val playlist = allPlaylists.find { it.id == playlistId }
-            mutableDetails.value = PlaylistDetailsUiState(playlist = playlist, isLoading = true)
-            runCatching { catalogRepository.playlistSongs(playlistId) }
-                .onSuccess { songs -> mutableDetails.value = PlaylistDetailsUiState(playlist, songs) }
-                .onFailure { mutableDetails.value = PlaylistDetailsUiState(playlist, errorMessageResId = R.string.catalog_load_failed) }
-        }
+        openedPlaylistId.value = playlistId
+        val playlist = allPlaylists.find { it.id == playlistId }
+        mutableDetails.value = PlaylistDetailsUiState(playlist = playlist)
     }
-
-    fun song(songId: String): Song? = mutableDetails.value.songs.find { it.id == songId }
 
     private fun refresh() {
         viewModelScope.launch {
@@ -86,6 +93,7 @@ class PlaylistsViewModel @Inject constructor(
             PlaylistSection.LOCAL -> PlaylistKind.LOCAL
             PlaylistSection.USER -> PlaylistKind.USER
         }
+        selectedKind.value = kind
         mutableState.value = PlaylistsUiState(
             isLoading = false,
             selectedSection = section,

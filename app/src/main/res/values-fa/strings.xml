@@ -88,11 +88,14 @@
     <string name="unlike_song">حذف پسند آهنگ</string>
     <string name="now_playing">در حال پخش</string>
     <string name="sleep_timer">زمان سنج خواب</string>
-    <string name="sleep_timer_started">زمان سنج خواب برای ۳۰ دقیقه تنظیم شد</string>
+    <string name="sleep_timer_started">زمان سنج خواب شروع شد</string>
+    <string name="choose_sleep_timer">انتخاب زمان سنج خواب</string>
+    <string name="minutes_short">%1$d دقیقه</string>
     <string name="pause">توقف موقت</string>
     <string name="download_song">دانلود آهنگ</string>
     <string name="download_started">دانلود شروع شد</string>
     <string name="remove_download">حذف دانلود</string>
+    <string name="remove_song">حذف آهنگ</string>
     <string name="premium_required_download">برای دانلود به حساب ویژه نیاز دارید</string>
     <string name="account">حساب کاربری</string>
     <string name="email">ایمیل</string>

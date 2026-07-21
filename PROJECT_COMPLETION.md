@@ -10,17 +10,21 @@
   including a version 1 to 2 auto-migration and exported schemas.
 - Supabase-ready authentication, profiles/avatar storage, 50-song catalog, playlists,
   follows, messages, receipts, Realtime WebSocket updates, typing events, and row-level security.
-- Paging 3 catalog search with debounce, filters, persistent per-item/clearable search history,
-  and deterministic offline fallback data.
+- Paging 3 for catalog search, playlists, playlist songs, downloads, liked/recent collections,
+  and chat history, with search debounce, filters, persistent per-item/clearable history, and
+  deterministic offline fallback data.
 - Media3 background service, MediaSession notification, cache, audio focus/noisy handling,
-  queue, play/pause/seek/next/previous, local-download-first playback, sleep timer, speed,
-  track-boundary fade, and persistent recent history.
+  queue, play/pause/seek/next/previous, local-download-first playback, selectable sleep timer,
+  speed, overlapping dual-player crossfade, and persistent recent history.
 - Premium WorkManager downloads, progress persistence, local metadata, delete button and swipe
   removal, and local-file-first playback.
 - Realtime one-to-one chat, sent/delivered/read/failed states, typing indicator, offline Room cache,
   shared-song cards, conversation history, user search, follow/unfollow, and public playlists.
-- Player presentation enhancements: rotating artwork, dominant-color background, animated Canvas
-  visualizer, queue position, speed controls, timer, and download action.
+- Player presentation enhancements: rotating artwork, shared-element mini/full-player artwork,
+  dominant-color background, animated Canvas visualizer, queue position, speed controls, timer,
+  and download action.
+- Swipe-to-dismiss removal on liked songs, recently played songs, and downloads.
+- Player/profile dimensions and visual colors are sourced from the shared design-system tokens.
 - English and Persian resources have exact key parity (135/135). Persian was runtime-tested and
   confirmed to mirror the five-tab navigation RTL.
 - Custom adaptive launcher artwork, shimmer, loading, empty, and retry/error states.

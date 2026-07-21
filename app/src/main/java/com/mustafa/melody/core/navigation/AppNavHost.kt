@@ -9,6 +9,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -60,8 +62,9 @@ import com.mustafa.melody.presentation.playlists.PlaylistsViewModel
 import com.mustafa.melody.presentation.playlists.PlaylistsEffect
 import com.mustafa.melody.presentation.playlists.PlaylistDetailsScreen
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun AppNavHost(
+fun SharedTransitionScope.AppNavHost(
     navController: NavHostController,
     appUiState: AppUiState,
     onAppIntent: (AppIntent) -> Unit,
@@ -76,7 +79,7 @@ fun AppNavHost(
     val authViewModel: AuthViewModel = viewModel()
     val authState by authViewModel.state.collectAsStateWithLifecycle()
     val chatViewModel: ChatViewModel = viewModel()
-    val chatMessages by chatViewModel.messages.collectAsStateWithLifecycle()
+    val chatMessages = chatViewModel.messages.collectAsLazyPagingItems()
     val isOtherUserTyping by chatViewModel.isOtherUserTyping.collectAsStateWithLifecycle()
     val searchViewModel: SearchViewModel = viewModel()
     val persistedSearchState by searchViewModel.state.collectAsStateWithLifecycle()
@@ -86,14 +89,22 @@ fun AppNavHost(
     val playlistsViewModel: PlaylistsViewModel = viewModel()
     val playlistsState by playlistsViewModel.state.collectAsStateWithLifecycle()
     val playlistDetailsState by playlistsViewModel.details.collectAsStateWithLifecycle()
+    val pagedPlaylists = playlistsViewModel.pagedPlaylists.collectAsLazyPagingItems()
+    val pagedPlaylistSongs = playlistsViewModel.pagedPlaylistSongs.collectAsLazyPagingItems()
     val socialViewModel: SocialViewModel = viewModel()
     val socialState by socialViewModel.state.collectAsStateWithLifecycle()
     val libraryViewModel: LibraryViewModel = viewModel()
     val likedSongs by libraryViewModel.likedSongs.collectAsStateWithLifecycle()
     val recentlyPlayed by libraryViewModel.recentlyPlayed.collectAsStateWithLifecycle()
+    val pagedLikedSongs = libraryViewModel.pagedLikedSongs.collectAsLazyPagingItems()
+    val pagedRecentlyPlayed = libraryViewModel.pagedRecentlyPlayed.collectAsLazyPagingItems()
     var selectedSocialUserId by rememberSaveable { mutableStateOf("") }
     var selectedSocialUserName by rememberSaveable { mutableStateOf("") }
     var downloadSortName by rememberSaveable { mutableStateOf(DownloadSortOption.RECENT.name) }
+    val pagedDownloadFlow = remember(downloadSortName) {
+        downloadsViewModel.pagedSongs(DownloadSortOption.valueOf(downloadSortName))
+    }
+    val pagedDownloads = pagedDownloadFlow.collectAsLazyPagingItems()
     val likedSongIds = likedSongs.map { it.id }.toSet()
 
     LaunchedEffect(playlistsViewModel) {
@@ -193,6 +204,7 @@ fun AppNavHost(
                         DownloadSortOption.ARTIST -> downloadedSongs.sortedBy { it.artistName.lowercase() }
                     },
                 ),
+                pagedSongs = pagedDownloads,
                 onIntent = { intent ->
                     when (intent) {
                         is DownloadsIntent.SortSelected -> downloadSortName = intent.sortOption.name
@@ -222,6 +234,7 @@ fun AppNavHost(
         composable(AppDestination.PLAYLISTS.route) {
             PlaylistsScreen(
                 uiState = playlistsState,
+                pagedPlaylists = pagedPlaylists,
                 onIntent = { intent ->
                     when (intent) {
                         is PlaylistsIntent.SectionSelected,
@@ -277,6 +290,7 @@ fun AppNavHost(
             NotificationsScreen(onBackClick = navController::popBackStack)
         }
         composable(AppRoute.NOW_PLAYING) {
+            val song = playbackState.song
             NowPlayingScreen(
                 state = playbackState,
                 speed = playbackSpeed,
@@ -289,8 +303,8 @@ fun AppNavHost(
                     playbackSpeed = it
                     PlaybackStore.setSpeed(context, it)
                 },
-                onSleepTimer = {
-                    PlaybackStore.startSleepTimer(context)
+                onSleepTimer = { minutes ->
+                    PlaybackStore.startSleepTimer(context, minutes)
                     onShowMessage(R.string.sleep_timer_started)
                 },
                 onDownload = {
@@ -301,6 +315,10 @@ fun AppNavHost(
                         onShowMessage(R.string.download_started)
                     }
                 },
+                artworkModifier = if (song == null) Modifier else Modifier.sharedElement(
+                    sharedContentState = rememberSharedContentState("player-artwork-${song.id}"),
+                    animatedVisibilityScope = this,
+                ),
             )
         }
         composable(AppRoute.AUTH) {
@@ -353,7 +371,9 @@ fun AppNavHost(
                 songs = likedSongs,
                 onBack = navController::popBackStack,
                 onPlayQueue = { songs, index -> PlaybackStore.playQueue(context, songs, index) },
-                onRemove = { libraryViewModel.toggle(it.id) },
+                onLikeToggle = { libraryViewModel.toggle(it.id) },
+                onSwipeRemove = { libraryViewModel.toggle(it.id) },
+                pagedSongs = pagedLikedSongs,
             )
         }
         composable(AppRoute.RECENT) {
@@ -362,6 +382,8 @@ fun AppNavHost(
                 songs = recentlyPlayed,
                 onBack = navController::popBackStack,
                 onPlayQueue = { songs, index -> PlaybackStore.playQueue(context, songs, index) },
+                onSwipeRemove = { libraryViewModel.removeRecent(it.id) },
+                pagedSongs = pagedRecentlyPlayed,
             )
         }
         composable(AppRoute.PLAYLIST_DETAIL) { entry ->
@@ -374,6 +396,7 @@ fun AppNavHost(
                 likedSongIds = likedSongIds,
                 onToggleLike = libraryViewModel::toggle,
                 onRetry = { playlistsViewModel.openPlaylist(playlistId) },
+                pagedSongs = pagedPlaylistSongs,
             )
         }
     }

@@ -68,3 +68,7 @@ val OutlineDark = Color(0xFF938F99)
 val PremiumGoldLight = Color(0xFFFFB900)
 val PremiumGoldDark = Color(0xFFFFD700)
 
+// Player presentation tokens
+val PlayerFallbackColor = Color(0xFF24143F)
+val PlayerVisualizerColor = Color(0xFF7C4DFF)
+

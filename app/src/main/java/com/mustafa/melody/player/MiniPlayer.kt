@@ -5,6 +5,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import coil3.compose.AsyncImage
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
@@ -21,7 +28,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.mustafa.melody.core.designsystem.theme.AppDimens
 
 @Composable
-fun MiniPlayer(state: PlaybackUiState, onClick: () -> Unit, onToggle: () -> Unit) {
+fun MiniPlayer(
+    state: PlaybackUiState,
+    onClick: () -> Unit,
+    onToggle: () -> Unit,
+    artworkModifier: Modifier = Modifier,
+) {
     val song = state.song ?: return
     Surface(tonalElevation = AppDimens.spacingSmall, modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.clickable(onClick = onClick)) {
@@ -35,6 +47,15 @@ fun MiniPlayer(state: PlaybackUiState, onClick: () -> Unit, onToggle: () -> Unit
                 modifier = Modifier.fillMaxWidth().padding(horizontal = AppDimens.spacingMedium),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                AsyncImage(
+                    model = song.coverImageUrl,
+                    contentDescription = song.title,
+                    modifier = artworkModifier
+                        .size(AppDimens.albumCoverSmall)
+                        .clip(RoundedCornerShape(AppDimens.cornerSmall)),
+                    contentScale = ContentScale.Crop,
+                )
+                Spacer(Modifier.width(AppDimens.spacingSmall))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(song.title, style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Text(song.artistName, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
